@@ -6,7 +6,7 @@ public class BallScript : MonoBehaviour
 {
 
   public Vector2 velocity;
-  public Vector2 moveSpeed;
+  public Vector2 startForce;
 
   private Rigidbody2D rb2d;
 
@@ -14,47 +14,21 @@ public class BallScript : MonoBehaviour
   void Start()
   {
     this.rb2d = this.GetComponent<Rigidbody2D>();
-    Debug.Log(rb2d);
-    this.rb2d.AddForce(new Vector2(100, -100));
+    this.rb2d.AddForce(startForce);
   }
 
   // Update is called once per frame
   void Update()
   {
-    // this.transform.Translate(new Vector3(moveVal.x, moveVal.y, 0) * moveSpeed * Time.deltaTime);
-  }
-
-  void FixedUpdate()
-  {
-
   }
 
   public void OnTriggerEnter2D(Collider2D other)
   {
-    // if (other.name == "Player")
-    // {
-    //   Debug.Log($"Collided with: {other.name}");
-    //   moveVal.y = -moveVal.y;
-    // }
-
     if (other.name == "Floor")
     {
       Debug.Log("Game over!");
       this.ResetBall();
     }
-
-    // Debug.Log($"Collided tag: {other.tag}");
-
-    // if (other.tag == "Wall")
-    // {
-    //   moveVal.x = -moveVal.x;
-    // }
-
-    // if (other.name == "Ceiling")
-    // {
-    //   moveVal.y = -moveVal.y;
-    // }
-
   }
 
   private void ResetBall()
