@@ -6,20 +6,12 @@ public class BallScript : MonoBehaviour
 {
 
   public Vector2 velocity;
-  public Vector2 startForce;
 
   private Rigidbody2D rb;
 
-  // Start is called be1fore the first frame update
   void Start()
   {
     this.rb = this.GetComponent<Rigidbody2D>();
-    this.rb.AddForce(startForce);
-  }
-
-  // Update is called once per frame
-  void Update()
-  {
   }
 
   void OnTriggerEnter2D(Collider2D other)
@@ -27,7 +19,7 @@ public class BallScript : MonoBehaviour
     if (other.name == "Floor")
     {
       Debug.Log("Game over!");
-      this.ResetBall();
+      AppGrid.gameManager.ResetBall();
     }
   }
 
@@ -37,12 +29,5 @@ public class BallScript : MonoBehaviour
     {
       collision.collider.GetComponent<BrickScript>().Damage(1);
     }
-  }
-
-  private void ResetBall()
-  {
-    this.transform.position = new Vector3(0.41f, 2.33f, 0);
-    this.rb.velocity = Vector2.zero;
-    this.rb.AddForce(startForce);
   }
 }

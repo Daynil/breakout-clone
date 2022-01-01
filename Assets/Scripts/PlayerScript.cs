@@ -7,11 +7,14 @@ public class PlayerScript : MonoBehaviour
 {
   public Vector2 moveSpeed;
   public Vector2 velocity;
+  public Vector2 startForce;
 
   public Vector2 directionalForce;
 
-  public Rigidbody2D rb2d;
+  public Rigidbody2D rb;
 
+  public GameObject ball;
+  public Rigidbody2D ballRb;
 
   // Start is called before the first frame update
   void Start()
@@ -20,23 +23,29 @@ public class PlayerScript : MonoBehaviour
     var height = camera.orthographicSize * 2;
     Debug.Log($"aspect: {camera.aspect}");
     Debug.Log($"width: {height * camera.aspect}, height: {height}");
-  }
 
-  // Update is called once per frame
-  void Update()
-  {
-    // this.transform.Translate(new Vector3(moveVal.x, 0, 0) * moveSpeed * Time.deltaTime);
-    // this.rb2d.MovePosition(rb2d.position + this.moveSpeed * Time.fixedDeltaTime)
+    this.rb = GetComponent<Rigidbody2D>();
+    this.ballRb = this.ball.GetComponent<Rigidbody2D>();
   }
 
   void FixedUpdate()
   {
-    this.rb2d.MovePosition(rb2d.position + this.velocity * Time.fixedDeltaTime);
+    this.rb.MovePosition(rb.position + this.velocity * Time.fixedDeltaTime);
   }
 
   void OnMove(InputValue value)
   {
     this.velocity = value.Get<Vector2>() * this.moveSpeed;
+  }
+
+  void OnFire(InputValue value)
+  {
+    // If we haven't launched the ball yet, do so.
+    if (this.ball.transform.parent != null)
+    {
+      this.LaunchBall();
+      return;
+    }
   }
 
   void OnCollisionEnter2D(Collision2D collision)
@@ -50,14 +59,15 @@ public class PlayerScript : MonoBehaviour
         float playerX = this.transform.position.x;
         float directionalMagnitude = (collisionX - playerX) / playerRadius;
         collision.collider.GetComponent<Rigidbody2D>().AddForce(directionalForce * directionalMagnitude);
-
-        // Debug.Log($"collision x: {collisionX}");
-        // Debug.Log($"player x: {playerX}");
-        // Debug.Log($"How far left or right collided: {collisionX - playerX}");
-        // Debug.Log($"Ratio left/rightness: {(collisionX - playerX) / playerRadius}");
-        // Debug.Log($"local: {p.point}");
       }
     }
+  }
+
+  void LaunchBall()
+  {
+    this.ball.transform.parent = null;
+    this.ballRb.isKinematic = false;
+    this.ballRb.AddForce(startForce);
   }
 
 }
