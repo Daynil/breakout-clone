@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+public struct MapDimens
+{
+  public float width;
+  public float height;
+}
+
 public class GameManager : MonoBehaviour
 {
 
@@ -13,6 +19,11 @@ public class GameManager : MonoBehaviour
   public List<GameObject> balls;
 
   public GameObject brickPrefab;
+
+  public MapDimens mapDimens;
+  public float wallWidth;
+  public float ceilingHeight;
+  public float brickPadding;
 
   void Awake()
   {
@@ -42,6 +53,16 @@ public class GameManager : MonoBehaviour
     this.balls.Add(GameObject.Find("Ball"));
 
     this.ResetBall();
+
+    Camera camera = GameObject.Find("Main Camera").GetComponent<Camera>();
+    this.mapDimens.height = camera.orthographicSize * 2;
+    this.mapDimens.width = mapDimens.height * camera.aspect;
+
+    GameObject wall = GameObject.Find("Wall");
+    this.wallWidth = wall.transform.localScale.x;
+    // Ceiling has same height as wall's width
+    this.ceilingHeight = wall.transform.localScale.x;
+
     this.LoadBricks();
   }
 
@@ -56,19 +77,39 @@ public class GameManager : MonoBehaviour
 
   public void LoadBricks()
   {
+    float brickWidth = this.brickPrefab.transform.localScale.x;
+    float brickHeight = this.brickPrefab.transform.localScale.y;
+
+    float firstBrickY = (this.mapDimens.height / 2) - this.ceilingHeight - (brickHeight / 2) - this.brickPadding;
+    float brickTotalYSpacing = brickHeight + this.brickPadding;
+
     string[] rows = System.IO.File.ReadAllLines($"./Assets/Levels/level{this.level}.txt");
-    foreach (string row in rows)
+
+    float brickTotalXSpacing = brickWidth + this.brickPadding;
+
+    int totalCols = rows[0].Length;
+    float totalSpaceOccupied = totalCols * brickTotalXSpacing;
+    float levelWidthAvailable = this.mapDimens.width - (this.wallWidth * 2);
+    float levelPadding = (levelWidthAvailable - totalSpaceOccupied) / 2;
+
+    float firstBrickX = (-this.mapDimens.width / 2) + (this.wallWidth * 2) + (brickWidth / 2) + levelPadding;
+
+    for (int row = 0; row < rows.Length; row++)
     {
-      for (int col = 0; col < row.Length; col++)
+      for (int col = 0; col < rows[row].Length; col++)
       {
-        string brickChar = row[col].ToString();
+        string brickChar = rows[row][col].ToString();
 
         // Blank slot
         if (brickChar == "x") continue;
 
-        GameObject brick = Instantiate(this.brickPrefab, new Vector3(1 + col, 3, 0), Quaternion.identity);
+        Vector3 brickPosition = new Vector3(firstBrickX + (brickTotalXSpacing * col),
+                                            firstBrickY - (brickTotalYSpacing * row),
+                                            0);
+        GameObject brick = Instantiate(this.brickPrefab, brickPosition, Quaternion.identity);
 
         BrickScript brickScript = brick.gameObject.GetComponent<BrickScript>();
+
         if (brickChar == "0")
         {
           brickScript.indestructable = true;
