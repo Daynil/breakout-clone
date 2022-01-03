@@ -36,6 +36,8 @@ public class GameManager : MonoBehaviour
   public int lives = 3;
   public Text livesText;
 
+  public Text debugText;
+
   void Awake()
   {
     DontDestroyOnLoad(this.gameObject);
@@ -58,6 +60,8 @@ public class GameManager : MonoBehaviour
       this.scoreboard.text = $"Score: {this.currentScore}";
       this.livesText = GameObject.Find("Lives").GetComponent<Text>();
       this.livesText.text = $"Lives: {this.lives}";
+
+      this.debugText = GameObject.Find("Debug").GetComponent<Text>();
     }
   }
 
@@ -162,5 +166,10 @@ public class GameManager : MonoBehaviour
     this.currentScore += brickDestroyed.GetComponent<BrickScript>().maxHealth * this.pointsPerBrick;
     this.scoreboard.text = $"Score: {this.currentScore}";
     Destroy(brickDestroyed);
+  }
+
+  public void SetDebugText(string text)
+  {
+    if (this.debugText.text != text) this.debugText.text = text;
   }
 }

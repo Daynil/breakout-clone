@@ -9,6 +9,8 @@ public class PlayerScript : MonoBehaviour
   public Vector2 velocity;
   public Vector2 startForce;
 
+  public float minVerticalSpeed;
+
   public Vector2 directionalForce;
 
   public Rigidbody2D rb;
@@ -44,7 +46,6 @@ public class PlayerScript : MonoBehaviour
     }
   }
 
-  // TODO: maintain vertical velocity on collisions
   void OnCollisionEnter2D(Collision2D collision)
   {
     if (collision.collider.tag == "Ball")
@@ -55,7 +56,17 @@ public class PlayerScript : MonoBehaviour
         float collisionX = p.point.x;
         float playerX = this.transform.position.x;
         float directionalMagnitude = (collisionX - playerX) / playerRadius;
-        collision.collider.GetComponent<Rigidbody2D>().AddForce(directionalForce * directionalMagnitude);
+
+        Rigidbody2D ballRb = collision.collider.GetComponent<Rigidbody2D>();
+
+        ballRb.AddForce(directionalForce * directionalMagnitude);
+
+        // Maintain vertical speed to reduce speed decay on directional switch
+        if (ballRb.velocity.y < this.minVerticalSpeed)
+        {
+          ballRb.velocity = new Vector2(ballRb.velocity.x, this.minVerticalSpeed);
+        }
+        AppGrid.gameManager.SetDebugText(collision.collider.GetComponent<Rigidbody2D>().velocity + "");
       }
     }
   }
