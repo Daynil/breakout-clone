@@ -159,8 +159,8 @@ public class GameManager : MonoBehaviour
 
   public void ScorePoints(GameObject brickDestroyed)
   {
-    int pointsScored = brickDestroyed.GetComponent<BrickScript>().maxHealth * this.pointsPerBrick;
-    this.scoreboard.text = $"Score: {this.currentScore + pointsScored}";
+    this.currentScore += brickDestroyed.GetComponent<BrickScript>().maxHealth * this.pointsPerBrick;
+    this.scoreboard.text = $"Score: {this.currentScore}";
     Destroy(brickDestroyed);
   }
 }

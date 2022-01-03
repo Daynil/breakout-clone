@@ -44,6 +44,7 @@ public class PlayerScript : MonoBehaviour
     }
   }
 
+  // TODO: maintain vertical velocity on collisions
   void OnCollisionEnter2D(Collision2D collision)
   {
     if (collision.collider.tag == "Ball")
