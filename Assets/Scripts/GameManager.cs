@@ -22,6 +22,7 @@ public class GameManager : MonoBehaviour
   public List<GameObject> bricks;
 
   public GameObject brickPrefab;
+  public GameObject ballPrefab;
 
   public MapDimens mapDimens;
   public float wallWidth;
@@ -31,6 +32,9 @@ public class GameManager : MonoBehaviour
   public int currentScore = 0;
   public Text scoreboard;
   public int pointsPerBrick;
+
+  public int lives = 3;
+  public Text livesText;
 
   void Awake()
   {
@@ -51,6 +55,9 @@ public class GameManager : MonoBehaviour
     {
       this.InitializeLevel();
       this.scoreboard = GameObject.Find("Score").GetComponent<Text>();
+      this.scoreboard.text = $"Score: {this.currentScore}";
+      this.livesText = GameObject.Find("Lives").GetComponent<Text>();
+      this.livesText.text = $"Lives: {this.lives}";
     }
   }
 
@@ -58,7 +65,6 @@ public class GameManager : MonoBehaviour
   {
     this.player = GameObject.Find("Player");
     this.balls = new List<GameObject>();
-    this.balls.Add(GameObject.Find("Ball"));
 
     this.ResetBall();
 
@@ -78,11 +84,13 @@ public class GameManager : MonoBehaviour
 
   public void ResetBall()
   {
-    this.balls[0].GetComponent<Rigidbody2D>().velocity = Vector3.zero;
-    this.balls[0].GetComponent<Rigidbody2D>().isKinematic = true;
-    this.balls[0].transform.parent = this.player.transform;
+    GameObject ball = Instantiate(this.ballPrefab, Vector3.zero, Quaternion.identity);
+    this.balls.Add(ball);
+    ball.GetComponent<Rigidbody2D>().velocity = Vector3.zero;
+    ball.GetComponent<Rigidbody2D>().isKinematic = true;
+    ball.transform.parent = this.player.transform;
 
-    this.balls[0].transform.position = this.player.transform.position + new Vector3(0, this.player.transform.localScale.y, 0);
+    ball.transform.position = this.player.transform.position + new Vector3(0, this.player.transform.localScale.y, 0);
   }
 
   public void LoadBricks()
@@ -134,6 +142,18 @@ public class GameManager : MonoBehaviour
           brickScript.health = Int32.Parse(brickChar);
         }
       }
+    }
+  }
+
+  public void LoseBall(GameObject ballLost)
+  {
+    this.balls.Remove(ballLost);
+    Destroy(ballLost);
+    if (this.balls.Count == 0)
+    {
+      this.lives--;
+      this.livesText.text = $"Lives: {this.lives}";
+      this.ResetBall();
     }
   }
 

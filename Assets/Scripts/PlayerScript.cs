@@ -13,9 +13,6 @@ public class PlayerScript : MonoBehaviour
 
   public Rigidbody2D rb;
 
-  public GameObject ball;
-  public Rigidbody2D ballRb;
-
   // Start is called before the first frame update
   void Start()
   {
@@ -25,7 +22,6 @@ public class PlayerScript : MonoBehaviour
     Debug.Log($"width: {height * camera.aspect}, height: {height}");
 
     this.rb = GetComponent<Rigidbody2D>();
-    this.ballRb = this.ball.GetComponent<Rigidbody2D>();
   }
 
   void FixedUpdate()
@@ -41,7 +37,7 @@ public class PlayerScript : MonoBehaviour
   void OnFire(InputValue value)
   {
     // If we haven't launched the ball yet, do so.
-    if (this.ball.transform.parent != null)
+    if (this.transform.childCount > 0)
     {
       this.LaunchBall();
       return;
@@ -65,9 +61,10 @@ public class PlayerScript : MonoBehaviour
 
   void LaunchBall()
   {
-    this.ball.transform.parent = null;
-    this.ballRb.isKinematic = false;
-    this.ballRb.AddForce(startForce);
+    GameObject attachedBall = this.transform.GetChild(0).gameObject;
+    attachedBall.transform.parent = null;
+    attachedBall.GetComponent<Rigidbody2D>().isKinematic = false;
+    attachedBall.GetComponent<Rigidbody2D>().AddForce(startForce);
   }
 
 }

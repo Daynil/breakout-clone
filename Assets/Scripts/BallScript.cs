@@ -18,8 +18,7 @@ public class BallScript : MonoBehaviour
   {
     if (other.name == "Floor")
     {
-      Debug.Log("Game over!");
-      AppGrid.gameManager.ResetBall();
+      AppGrid.gameManager.LoseBall(this.gameObject);
     }
   }
 
