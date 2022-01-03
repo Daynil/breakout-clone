@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public struct MapDimens
 {
@@ -17,6 +18,8 @@ public class GameManager : MonoBehaviour
 
   public GameObject player;
   public List<GameObject> balls;
+  public GameObject bricksParent;
+  public List<GameObject> bricks;
 
   public GameObject brickPrefab;
 
@@ -24,6 +27,10 @@ public class GameManager : MonoBehaviour
   public float wallWidth;
   public float ceilingHeight;
   public float brickPadding;
+
+  public int currentScore = 0;
+  public Text scoreboard;
+  public int pointsPerBrick;
 
   void Awake()
   {
@@ -43,6 +50,7 @@ public class GameManager : MonoBehaviour
     if (scene.buildIndex == 1)
     {
       this.InitializeLevel();
+      this.scoreboard = GameObject.Find("Score").GetComponent<Text>();
     }
   }
 
@@ -62,6 +70,8 @@ public class GameManager : MonoBehaviour
     this.wallWidth = wall.transform.localScale.x;
     // Ceiling has same height as wall's width
     this.ceilingHeight = wall.transform.localScale.x;
+
+    this.bricksParent = GameObject.Find("Bricks");
 
     this.LoadBricks();
   }
@@ -94,6 +104,8 @@ public class GameManager : MonoBehaviour
 
     float firstBrickX = (-this.mapDimens.width / 2) + (this.wallWidth * 2) + (brickWidth / 2) + levelPadding;
 
+    this.bricks = new List<GameObject>();
+
     for (int row = 0; row < rows.Length; row++)
     {
       for (int col = 0; col < rows[row].Length; col++)
@@ -107,6 +119,8 @@ public class GameManager : MonoBehaviour
                                             firstBrickY - (brickTotalYSpacing * row),
                                             0);
         GameObject brick = Instantiate(this.brickPrefab, brickPosition, Quaternion.identity);
+        brick.transform.SetParent(this.bricksParent.transform);
+        this.bricks.Add(brick);
 
         BrickScript brickScript = brick.gameObject.GetComponent<BrickScript>();
 
@@ -116,9 +130,17 @@ public class GameManager : MonoBehaviour
         }
         else
         {
+          brickScript.maxHealth = Int32.Parse(brickChar);
           brickScript.health = Int32.Parse(brickChar);
         }
       }
     }
+  }
+
+  public void ScorePoints(GameObject brickDestroyed)
+  {
+    int pointsScored = brickDestroyed.GetComponent<BrickScript>().maxHealth * this.pointsPerBrick;
+    this.scoreboard.text = $"Score: {this.currentScore + pointsScored}";
+    Destroy(brickDestroyed);
   }
 }

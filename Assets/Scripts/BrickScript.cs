@@ -5,9 +5,11 @@ using UnityEngine;
 public class BrickScript : MonoBehaviour
 {
 
-  public int health;
+  public int maxHealth;
+  [HideInInspector] public int health;
   public bool indestructable;
   SpriteRenderer sr;
+  public int pointsPerHealth;
 
   // Start is called before the first frame update
   void Start()
@@ -45,7 +47,7 @@ public class BrickScript : MonoBehaviour
     this.health = this.health - amount;
     if (this.health <= 0)
     {
-      Destroy(this.gameObject);
+      AppGrid.gameManager.ScorePoints(this.gameObject);
     }
     else
     {

@@ -155,10 +155,15 @@ MonoBehaviour:
   level: 1
   player: {fileID: 0}
   balls: []
+  bricksParent: {fileID: 0}
+  bricks: []
   brickPrefab: {fileID: 4567691619041501668, guid: 82cb0c14f36a5044ebb26ff182dbf04f, type: 3}
   wallWidth: 0
   ceilingHeight: 0
   brickPadding: 0.1
+  currentScore: 0
+  scoreboard: {fileID: 0}
+  pointsPerBrick: 10
 --- !u!4 &896770010
 Transform:
   m_ObjectHideFlags: 0
