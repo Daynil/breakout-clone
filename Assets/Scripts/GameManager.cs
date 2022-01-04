@@ -53,7 +53,7 @@ public class GameManager : MonoBehaviour
 
   void OnSceneLoaded(Scene scene, LoadSceneMode mode)
   {
-    if (scene.buildIndex == 1)
+    if (scene.name == "MainScene")
     {
       this.InitializeLevel();
       this.scoreboard = GameObject.Find("Score").GetComponent<Text>();
@@ -171,5 +171,10 @@ public class GameManager : MonoBehaviour
   public void SetDebugText(string text)
   {
     if (this.debugText.text != text) this.debugText.text = text;
+  }
+
+  public void OnStartGame()
+  {
+    SceneManager.LoadScene("MainScene");
   }
 }
